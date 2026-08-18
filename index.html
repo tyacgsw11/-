@@ -25,11 +25,12 @@
         .status-warn { color: #854d0e; background: #fef9c3; }
         .status-danger { color: #991b1b; background: #fee2e2; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         th { background: #f1f5f9; color: #475569; }
-        .deduct { color: #dc2626; font-weight: bold; }
+        .deduct { color: #dc2626; font-weight: bold; text-align: center; }
         .not-found { text-align: center; color: #dc2626; padding: 10px; display: none; }
-        .admin-section { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #cbd5e1; }
+        .rules-section { margin-top: 25px; padding-top: 15px; border-top: 2px solid #e2e8f0; }
+        .admin-section { margin-top: 25px; padding-top: 15px; border-top: 2px dashed #cbd5e1; }
     </style>
 </head>
 <body>
@@ -63,13 +64,28 @@
             <thead>
                 <tr>
                     <th>รายการผิดวินัย</th>
-                    <th style="width: 80px; text-align: center;">หักคะแนน</th>
+                    <th style="width: 90px; text-align: center;">หักคะแนน</th>
                 </tr>
             </thead>
             <tbody id="historyList"></tbody>
         </table>
     </div>
 
+    <!-- ตารางเกณฑ์การหักคะแนน -->
+    <div class="rules-section">
+        <h3>📋 ตารางเกณฑ์การหักคะแนน</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ฐานความผิด</th>
+                    <th style="width: 90px; text-align: center;">หัก (คะแนน)</th>
+                </tr>
+            </thead>
+            <tbody id="rulesTableList"></tbody>
+        </table>
+    </div>
+
+    <!-- ส่วนของผู้ดูแลระบบ -->
     <div class="admin-section">
         <h3>สำหรับผู้ดูแลระบบ</h3>
         <div class="admin-box">
@@ -85,19 +101,31 @@
 <script>
     const infractions = [
         { detail: "มาโรงเรียนสาย", points: 5 },
-        { detail: "ไม่แต่งกายตามระเบียบ", points: 10 },
         { detail: "ทรงผมผิดระเบียบ", points: 5 },
-        { detail: "หนีคาบเรียน", points: 20 },
+        { detail: "ไม่แต่งกายตามระเบียบ", points: 10 },
         { detail: "ใช้วาจาไม่สุภาพ", points: 10 },
-        { detail: "นำโทรศัพท์มาใช้ในห้องเรียน", points: 15 }
+        { detail: "นำโทรศัพท์มาใช้ในห้องเรียน", points: 15 },
+        { detail: "หนีคาบเรียน", points: 20 }
     ];
 
+    // โหลดข้อมูลใส่ตารางเกณฑ์ความผิดและ Dropdown
     const select = document.getElementById("infractionSelect");
+    const rulesTableList = document.getElementById("rulesTableList");
+
     infractions.forEach((item, index) => {
+        // ใส่ใน Dropdown Admin
         const option = document.createElement("option");
         option.value = index;
-        option.text = `${item.detail} (หัก ${item.points} คะแนน)`;
+        option.text = `${item.detail} (-${item.points} คะแนน)`;
         select.add(option);
+
+        // ใส่ในตารางเกณฑ์การหักคะแนน
+        rulesTableList.innerHTML += `
+            <tr>
+                <td>${item.detail}</td>
+                <td class="deduct">-${item.points}</td>
+            </tr>
+        `;
     });
 
     const students = [
@@ -147,7 +175,7 @@
                 historyList.innerHTML += `
                     <tr>
                         <td>${item.detail}</td>
-                        <td style="text-align: center;" class="deduct">-${item.points}</td>
+                        <td class="deduct">-${item.points}</td>
                     </tr>
                 `;
             });
@@ -197,4 +225,3 @@
 
 </body>
 </html>
-
